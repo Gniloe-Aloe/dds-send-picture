@@ -1,0 +1,13 @@
+
+module HelloWorldData
+{
+  struct Msg
+  {
+    //float picture_width;
+    float picture_width                  ;
+    string message;
+    
+    
+  };
+  #pragma keylist Msg picture_width
+};
