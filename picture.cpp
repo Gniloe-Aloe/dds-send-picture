@@ -66,6 +66,7 @@ void Picture::set_picture(const unsigned& width, const std::string& message) {
             pixel_matrix[i_width][i_height].blue = uint8_t(message[picture_pixel_width * 9 * i_height + i_width * 9 + 6] - 48) * 100
                 + uint8_t(message[picture_pixel_width * 9 * i_height + i_width * 9 + 7] - 48) * 10
                 + uint8_t(message[picture_pixel_width * 9 * i_height + i_width * 9 + 8] - 48);
+            
         }
     }
 }

@@ -53,15 +53,15 @@ int main() {
 
         // создаём изображение, которое будем отправлять
         cv::Mat image;
-        image = cv::imread("/home/dkosinov/Desktop/opencv-test/test-image.png");
+        image = cv::imread("/home/dkosinov/Desktop/opencv-test/test1920-1080.jpg");
 
         //cv::Mat scale_image;
 
         //cv::resize(image, scale_image, cv::Size(500, 500));
 
-        //cv::imshow("Send image", scale_image);
+        //cv::imshow("Send image", scale_image);b
 
-        std::cout << "width = " << image.rows << '\t' << "heigh = " << image.cols << '\n';
+        std::cout << "width = " << image.cols << '\t' << "heigh = " << image.rows << '\n';
 
         //cv::waitKey(0);
 
@@ -72,8 +72,10 @@ int main() {
        
             
         std::cout << "=== [Publisher] Picture send" << std::endl;
-        writer.write(msg);
         
+        
+        writer.write(msg);
+       
         
         /* With a normal configuration (see dds::pub::qos::DataWriterQos
          * for various different writer configurations), deleting a writer will
@@ -83,7 +85,9 @@ int main() {
          * this in a polling loop. */
 
         std::cout << "=== [Publisher] Waiting for sample to be accepted." << std::endl;
-        /*while (writer.publication_matched_status().current_count() > 0) {
+
+        // перестал работать
+       /* while (writer.publication_matched_status().current_count() > 0) {
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }*/
     }

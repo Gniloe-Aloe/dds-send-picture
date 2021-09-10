@@ -89,6 +89,7 @@ int main() {
             dds::sub::LoanedSamples<HelloWorldData::Msg> samples;
 
             /* Try taking samples from the reader. */
+            
             samples = reader.take();
 
             /* Are samples read? */
@@ -100,7 +101,6 @@ int main() {
                     const HelloWorldData::Msg& msg = sample_iter->data();
                     const dds::sub::SampleInfo& info = sample_iter->info();
                     
-                    seconds_waiting_message = 0;
 
                     /* Sometimes a sample is read, only to indicate a data
                      * state change (which can be found in the info). If
@@ -108,7 +108,7 @@ int main() {
                      * is set. The other data parts are not.
                      * Check if this sample has valid data. */
                     if (info.valid()) {
-                        std::cout << "=== [READER] Message received:" << std::endl;
+                        std::cout << "=== [READER] Picture received:" << std::endl;
                         
                         // создаём наш класс изображения
                         Picture pic(msg.picture_width(), msg.message());
@@ -117,18 +117,24 @@ int main() {
                         pic.prepare_opencv_Mat();
 
                         // создаём изображение для увеличения масштаба
-                        cv::Mat scale_image;
-                        cv::resize(pic.opencv_picture, scale_image, cv::Size(500, 500));
+                        /*cv::Mat scale_image;
+                        cv::resize(pic.opencv_picture, scale_image, cv::Size(500, 500));*/
 
-                        std::cout << "width = " << pic.opencv_picture.rows << '\t' << "heigh = " << pic.opencv_picture.cols << '\n';
+                        std::cout << "Width = " << pic.opencv_picture.cols << '\t' << "Heigh = " << pic.opencv_picture.rows << '\n';
 
-                        cv::imshow("read image", scale_image);
+                        pic.opencv_picture;
 
-                        cv::waitKey(0);
+                        std::cout << "=== [READER] Picture saved" << '\n';
+                        //cv::imwrite("/home/dkosinov/Desktop/opencv-test/new_my.png", pic.opencv_picture);
+                        cv::imwrite("/home/dkosinov/win_home/Desktop/new_my.png", pic.opencv_picture);
+
+
+                        /*cv::imshow("read image", pic.opencv_picture);
+                        cv::waitKey(0);*/
 
 
 
-                        std::cout << "=== [READER] Message end received" << '\n';
+                        std::cout << "=== [READER] Picture end received" << '\n';
                         
                         /*std::string image_path = cv::samples::findFile("/home/dkosinov/Desktop/opencv-test/lena.png");
                         image_vector[i] = cv::imread(image_path);*/
