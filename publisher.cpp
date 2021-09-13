@@ -16,6 +16,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgcodecs.hpp>
 
+#include "base64.hpp"
 
 //using namespace org::eclipse::cyclonedds;
 
@@ -52,23 +53,19 @@ int main() {
         }
 
         // создаём изображение, которое будем отправлять
-        cv::Mat image;
-        image = cv::imread("/home/dkosinov/Desktop/opencv-test/test1920-1080.jpg");
-
-        //cv::Mat scale_image;
-
-        //cv::resize(image, scale_image, cv::Size(500, 500));
-
-        //cv::imshow("Send image", scale_image);b
+        cv::Mat image = cv::imread("/home/dkosinov/Desktop/opencv-test/test1920-1080.jpg");
 
         std::cout << "width = " << image.cols << '\t' << "heigh = " << image.rows << '\n';
 
-        //cv::waitKey(0);
+        // кодируем изображение в base64
+        std::vector<uchar> buffer;
+        buffer.resize(static_cast<size_t>(image.rows) * static_cast<size_t>(image.cols));
+        cv::imencode(".png", image, buffer);
+        //std::string encoding = base64_encode(buffer.data(), buffer.size());
 
-        Picture pic(image);
 
-        //Write the message from my picture class
-        HelloWorldData::Msg msg(pic.get_picture_width(), pic.get_picture_message() );
+        // отправляем изображение
+        HelloWorldData::Msg msg(0, base64_encode(buffer.data(), buffer.size()));
        
             
         std::cout << "=== [Publisher] Picture send" << std::endl;

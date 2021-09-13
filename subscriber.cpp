@@ -15,26 +15,10 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/imgcodecs.hpp>
 
-//#include <opencv2/highgui.hpp>
-//#include <iostream>
-//
-//int main(int argc, char** argv) {
-//
-//    cv::Mat image;
-//    //CV_LOAD_IMAGE_COLOR
-//    image = cv::imread("lena.png");
-//
-//    if (!image.data) {
-//        std::cout << "Could not open or find the image" << std::endl;
-//        return -1;
-//    }
-//
-//    cv::namedWindow("Display window", cv::WINDOW_AUTOSIZE);
-//    cv::imshow("Display window", image);
-//
-//    cv::waitKey(0);
-//    return 2;
-//}
+#include "base64.hpp"
+#include "timer.hpp"
+
+
 
 void print_pixels_chanell_matrix(uint8_t* point_to_pixel_matrix, const unsigned& width, const unsigned& heigh) {
     for (int h = 0; h < heigh; ++h) {
@@ -48,6 +32,7 @@ void print_pixels_chanell_matrix(uint8_t* point_to_pixel_matrix, const unsigned&
 
 
 int main() {
+    timer t;
     try {
 
         std::cout << "=== [READER] Create reader." << std::endl;
@@ -74,13 +59,9 @@ int main() {
          * solutions, albeit somewhat more elaborate ones. */
         std::cout << "=== [READER] Wait for message." << std::endl;
         
-        unsigned seconds_waiting_message = 0;
-
-
-        
-
         //we expect 1 message, when we accept it - we end
         bool message_accept = 0;
+
 
         while (!message_accept) {
             /* For this example, the reader will return a set of messages (aka
@@ -89,7 +70,6 @@ int main() {
             dds::sub::LoanedSamples<HelloWorldData::Msg> samples;
 
             /* Try taking samples from the reader. */
-            
             samples = reader.take();
 
             /* Are samples read? */
@@ -101,7 +81,6 @@ int main() {
                     const HelloWorldData::Msg& msg = sample_iter->data();
                     const dds::sub::SampleInfo& info = sample_iter->info();
                     
-
                     /* Sometimes a sample is read, only to indicate a data
                      * state change (which can be found in the info). If
                      * that's the case, only the key value of the sample
@@ -110,67 +89,45 @@ int main() {
                     if (info.valid()) {
                         std::cout << "=== [READER] Picture received:" << std::endl;
                         
-                        // создаём наш класс изображения
-                        Picture pic(msg.picture_width(), msg.message());
-                        
-                        // переносим изображение из класса в объект cv::Mat
-                        pic.prepare_opencv_Mat();
+                       
+                        // раскодируем
+                        std::string dec_jpg = base64_decode(msg.message());
+                        std::vector<uchar> data(dec_jpg.begin(), dec_jpg.end());
+                        cv::Mat base64_image = cv::imdecode(cv::Mat(data), 1);
 
-                        // создаём изображение для увеличения масштаба
-                        /*cv::Mat scale_image;
-                        cv::resize(pic.opencv_picture, scale_image, cv::Size(500, 500));*/
-
-                        std::cout << "Width = " << pic.opencv_picture.cols << '\t' << "Heigh = " << pic.opencv_picture.rows << '\n';
-
-                        pic.opencv_picture;
-
+                        // сохраняем base64 картинку на рабочий стол винды
                         std::cout << "=== [READER] Picture saved" << '\n';
-                        //cv::imwrite("/home/dkosinov/Desktop/opencv-test/new_my.png", pic.opencv_picture);
-                        cv::imwrite("/home/dkosinov/win_home/Desktop/new_my.png", pic.opencv_picture);
+                        cv::imwrite("/home/dkosinov/win_home/Desktop/base64-picture.png", base64_image);
+                        
+                       
 
+                        // Выводим картинку. Увеличиваем её масштаб, если она слишком маленькая (пока не выводим)
+                        /*if (base64_image.cols < 80 || base64_image.rows < 80) {
+                            cv::Mat scale_image;
+                            cv::resize(base64_image, scale_image, cv::Size(), 10., 10.);
+                            cv::imshow("Scaled picture", scale_image);
+                            cv::waitKey(0);
+                        }
+                        else {
+                            cv::imshow("Picture", base64_image);
+                            cv::waitKey(0);
+                        }*/
 
-                        /*cv::imshow("read image", pic.opencv_picture);
-                        cv::waitKey(0);*/
-
-
+                        std::cout << "Width = " << base64_image.cols << '\t' << "Heigh = " << base64_image.rows << '\n';
 
                         std::cout << "=== [READER] Picture end received" << '\n';
-                        
-                        /*std::string image_path = cv::samples::findFile("/home/dkosinov/Desktop/opencv-test/lena.png");
-                        image_vector[i] = cv::imread(image_path);*/
-                        
-                        //тестово выводим картинку
 
-                        //std::string image_path = cv::samples::findFile("/home/dkosinov/Desktop/opencv-test/test-image.png");
-                        
-                        //image = cv::imread(image_path);
+                        //base64 тест
+                       /* cv::Mat image = cv::imread("/home/dkosinov/Desktop/opencv-test/test15-15.png");
+                        std::vector<uchar> buffer;
+                        buffer.resize(static_cast<size_t>(image.rows) * static_cast<size_t>(image.cols));
+                        cv::imencode(".jpg", image, buffer);
+                        std::string encoding = base64_encode(buffer.data(), buffer.size());
 
-                        //сделать картинку чёрно-белой
-                        //cv::cvtColor(image, gray_image, cv::COLOR_BGR2GRAY);
-                        
-                        //обрисовать границы
-                        //cv::Canny(image, canny_image, 50, 150);
+                        std::cout << "base64: " << std::endl;
+                        std::cout << encoding << std::endl;*/
 
-                        //cv::namedWindow("Canny", cv::WINDOW_AUTOSIZE);
-                        //cv::imshow("gray!", gray_image);
-
-                        //утолщение границ
-                        /*cv::Mat kernel_image = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2, 2));
-                        cv::dilate(canny_image, image, kernel_image);*/
-                        
-
-                        //scale - size без параметров
-                        //cv::resize(image, resize_image, cv::Size(), 0.2, 0.2);
-
-                        //обрезать картинку с помощью прямоугольника
-                       /* cv::Rect crop_rect(20, 20, 200, 200);
-                        crop_image = image(crop_rect);*/
-
-                        
-                        /*uint8_t pix = image.at<uint8_t>(0, 0);
-                        std::cout << int(pix-48) << std::endl;*/
-
-
+                       
                         //we break this cycle
                         message_accept = true;
                     }

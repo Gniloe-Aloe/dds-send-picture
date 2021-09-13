@@ -18,6 +18,7 @@ add_executable(ddscxxHelloworldSubscriber subscriber.cpp)
 #my timer and picture libs
 add_library(TIMER STATIC timer.cpp timer.hpp)
 add_library(PICTURE STATIC picture.cpp picture.hpp)
+add_library(BASE64 STATIC base64.cpp base64.hpp)
 
 # my opencv 
 find_package( OpenCV REQUIRED )
@@ -28,12 +29,14 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 target_link_libraries(ddscxxHelloworldPublisher CycloneDDS-CXX::ddscxx
                                                 TIMER
                                                 PICTURE
+                                                BASE64
                                                 ${OpenCV_LIBS}
                                                 )
 
 target_link_libraries(ddscxxHelloworldSubscriber CycloneDDS-CXX::ddscxx
                                                  TIMER
                                                  PICTURE
+                                                 BASE64
                                                  ${OpenCV_LIBS}
                                                  )
 
