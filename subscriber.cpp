@@ -32,7 +32,7 @@ void print_pixels_chanell_matrix(uint8_t* point_to_pixel_matrix, const unsigned&
 
 
 int main() {
-    timer t;
+    
     try {
 
         std::cout << "=== [READER] Create reader." << std::endl;
@@ -60,10 +60,11 @@ int main() {
         std::cout << "=== [READER] Wait for message." << std::endl;
         
         //we expect 1 message, when we accept it - we end
-        bool message_accept = 0;
+        unsigned message_accept = 0;
 
-
-        while (!message_accept) {
+        timer t;
+        //!message_accept
+        while (message_accept != 9) {
             /* For this example, the reader will return a set of messages (aka
              * Samples). There are other ways of getting samples from reader.
              * See the various read() and take() functions that are present. */
@@ -95,9 +96,12 @@ int main() {
                         std::vector<uchar> data(dec_jpg.begin(), dec_jpg.end());
                         cv::Mat base64_image = cv::imdecode(cv::Mat(data), 1);
 
+                       
+                        
                         // сохраняем base64 картинку на рабочий стол винды
+                        
                         std::cout << "=== [READER] Picture saved" << '\n';
-                        cv::imwrite("/home/dkosinov/win_home/Desktop/base64-picture.png", base64_image);
+                        //cv::imwrite("/home/dkosinov/win_home/Desktop/pic/base64-picture-" + std::to_string(msg.picture_width()) + ".png", base64_image);
                         
                        
 
@@ -117,19 +121,8 @@ int main() {
 
                         std::cout << "=== [READER] Picture end received" << '\n';
 
-                        //base64 тест
-                       /* cv::Mat image = cv::imread("/home/dkosinov/Desktop/opencv-test/test15-15.png");
-                        std::vector<uchar> buffer;
-                        buffer.resize(static_cast<size_t>(image.rows) * static_cast<size_t>(image.cols));
-                        cv::imencode(".jpg", image, buffer);
-                        std::string encoding = base64_encode(buffer.data(), buffer.size());
-
-                        std::cout << "base64: " << std::endl;
-                        std::cout << encoding << std::endl;*/
-
-                       
                         //we break this cycle
-                        message_accept = true;
+                        message_accept = msg.picture_width();
                     }
                 }
             } else {

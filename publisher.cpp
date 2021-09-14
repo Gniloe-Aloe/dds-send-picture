@@ -24,7 +24,7 @@ int main() {
     timer timer;
     
     try {
-        std::cout << "=== [Publisher] Create writer." << std::endl;
+        std::cout << "=== [Publisher] Create writer" << std::endl;
 
         //First, a domain participant is needed.
         //Create one on the default domain.
@@ -46,47 +46,55 @@ int main() {
          * really recommended to do a wait in a polling loop, however.
          * Please take a look at Listeners and WaitSets for much better
          * solutions, albeit somewhat more elaborate ones. */
-        std::cout << "=== [Publisher] Waiting for subscriber." << std::endl;
+        std::cout << "=== [Publisher] Waiting for subscriber" << std::endl;
 
         while (writer.publication_matched_status().current_count() == 0) {
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
 
-        // создаём изображение, которое будем отправлять
-        cv::Mat image = cv::imread("/home/dkosinov/Desktop/opencv-test/test1920-1080.jpg");
+        cv::Mat image = cv::imread("/home/dkosinov/Desktop/opencv-test/test1920-1080-2.jpg");
 
-        std::cout << "width = " << image.cols << '\t' << "heigh = " << image.rows << '\n';
-
-        // кодируем изображение в base64
-        std::vector<uchar> buffer;
-        buffer.resize(static_cast<size_t>(image.rows) * static_cast<size_t>(image.cols));
-        cv::imencode(".png", image, buffer);
-        //std::string encoding = base64_encode(buffer.data(), buffer.size());
+        for (int i = 0; i < 10; ++i) {
+            std::cout << "=== [Publisher] Creating picture" << std::endl;
+            // создаём изображение, которое будем отправлять
+            //image = cv::imread("/home/dkosinov/Desktop/opencv-test/test1920-1080-2.jpg");
 
 
-        // отправляем изображение
-        HelloWorldData::Msg msg(0, base64_encode(buffer.data(), buffer.size()));
-       
+            std::cout << "width = " << image.cols << '\t' << "heigh = " << image.rows << '\n';
+
+            // кодируем изображение в base64
+            std::vector<uchar> buffer;
+            buffer.resize(static_cast<size_t>(image.rows) * static_cast<size_t>(image.cols));
+            cv::imencode(".png", image, buffer);
+            //std::string encoding = base64_encode(buffer.data(), buffer.size());
+
+
+            // отправляем изображение
+            HelloWorldData::Msg msg(i, base64_encode(buffer.data(), buffer.size()));
+
+
+            //std::cout << "=== [Publisher] Picture #" << i <<" send" << std::endl;
+
+
+            writer.write(msg);
+            //std::this_thread::sleep_for(std::chrono::seconds(2));
+
             
-        std::cout << "=== [Publisher] Picture send" << std::endl;
-        
-        
-        writer.write(msg);
-       
-        
-        /* With a normal configuration (see dds::pub::qos::DataWriterQos
-         * for various different writer configurations), deleting a writer will
-         * dispose all its related message.
-         * Wait for the subscriber to have stopped to be sure it received the
-         * message. Again, not normally necessary and not recommended to do
-         * this in a polling loop. */
 
-        std::cout << "=== [Publisher] Waiting for sample to be accepted." << std::endl;
+            /* With a normal configuration (see dds::pub::qos::DataWriterQos
+             * for various different writer configurations), deleting a writer will
+             * dispose all its related message.
+             * Wait for the subscriber to have stopped to be sure it received the
+             * message. Again, not normally necessary and not recommended to do
+             * this in a polling loop. */
+        }
 
-        // перестал работать
-       /* while (writer.publication_matched_status().current_count() > 0) {
+        std::cout << "=== [Publisher] Waiting for samples to be accepted" << std::endl;
+        // этот фрагмент перестал работать
+        while (writer.publication_matched_status().current_count() > 0) {
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        }*/
+        }
+        
     }
     catch (const dds::core::Exception& e) {
         std::cerr << "=== [Publisher] exception: " << e.what() << std::endl;
@@ -97,7 +105,7 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    std::cout << "=== [Publisher] Done." << std::endl;
+    std::cout << "=== [Publisher] Done" << std::endl;
 
     return EXIT_SUCCESS;
 }
