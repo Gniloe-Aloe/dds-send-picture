@@ -31,6 +31,7 @@ target_link_libraries(ddscxxHelloworldPublisher CycloneDDS-CXX::ddscxx
                                                 PICTURE
                                                 BASE64
                                                 ${OpenCV_LIBS}
+                                                pthread
                                                 )
 
 target_link_libraries(ddscxxHelloworldSubscriber CycloneDDS-CXX::ddscxx
@@ -38,6 +39,7 @@ target_link_libraries(ddscxxHelloworldSubscriber CycloneDDS-CXX::ddscxx
                                                  PICTURE
                                                  BASE64
                                                  ${OpenCV_LIBS}
+                                                 pthread
                                                  )
 
 # Disable the static analyzer in GCC to avoid crashing the GNU C++ compiler

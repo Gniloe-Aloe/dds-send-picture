@@ -18,20 +18,19 @@
 
 #include "base64.hpp"
 
-//using namespace org::eclipse::cyclonedds;
+int main() {
 
-int main() {    
-    timer timer;
-    
+    timer t;
+
     try {
-        std::cout << "=== [Publisher] Create writer" << std::endl;
+        std::cout << "=== [Publisher] Create writer." << std::endl;
 
-        //First, a domain participant is needed.
-        //Create one on the default domain.
+        /* First, a domain participant is needed.
+         * Create one on the default domain. */
         dds::domain::DomainParticipant participant(org::eclipse::cyclonedds::domain::default_id());
 
         /* To publish something, a topic is needed. */
-        //dds::topic::Topic<HelloWorldData::Msg> topic(participant, "HelloWorldData_Msg");
+        
         dds::topic::Topic<HelloWorldData::Msg> topic(participant, "any_topic_name");
 
         /* A writer also needs a publisher. */
@@ -46,40 +45,42 @@ int main() {
          * really recommended to do a wait in a polling loop, however.
          * Please take a look at Listeners and WaitSets for much better
          * solutions, albeit somewhat more elaborate ones. */
-        std::cout << "=== [Publisher] Waiting for subscriber" << std::endl;
+
+        std::cout << "=== [Publisher] Waiting for subscriber." << std::endl;
 
         while (writer.publication_matched_status().current_count() == 0) {
             std::this_thread::sleep_for(std::chrono::milliseconds(20));
         }
 
-        cv::Mat image = cv::imread("/home/dkosinov/Desktop/opencv-test/test1920-1080-2.jpg");
+        //создаём изображение для отправки
+        cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/2560-1440.png");
+        //cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/colour.jpg");
+        //cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/size.png");
+        //cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/1920-1080.png");
 
-        for (int i = 0; i < 10; ++i) {
-            std::cout << "=== [Publisher] Creating picture" << std::endl;
-            // создаём изображение, которое будем отправлять
-            //image = cv::imread("/home/dkosinov/Desktop/opencv-test/test1920-1080-2.jpg");
+        //кодируем изображение в base64
+        std::vector<uchar> buffer;
+        buffer.resize(static_cast<size_t>(image.rows) * static_cast<size_t>(image.cols));
+        cv::imencode(".png", image, buffer);
+        std::string encoding = base64_encode(buffer.data(), buffer.size());
 
+        for (int i = 0; i < 25; ++i) {
 
-            std::cout << "width = " << image.cols << '\t' << "heigh = " << image.rows << '\n';
-
-            // кодируем изображение в base64
-            std::vector<uchar> buffer;
+            //кодируем изображение в цикле
+            /*std::vector<uchar> buffer;
             buffer.resize(static_cast<size_t>(image.rows) * static_cast<size_t>(image.cols));
             cv::imencode(".png", image, buffer);
-            //std::string encoding = base64_encode(buffer.data(), buffer.size());
+            std::string encoding = base64_encode(buffer.data(), buffer.size());*/
 
+            /* Create a message to write. */
 
-            // отправляем изображение
-            HelloWorldData::Msg msg(i, base64_encode(buffer.data(), buffer.size()));
+            HelloWorldData::Msg msg(i, encoding);
 
-
-            //std::cout << "=== [Publisher] Picture #" << i <<" send" << std::endl;
-
-
+            /* Write the message. */
+            std::cout << "=== [Publisher] Write sample." << std::endl;
             writer.write(msg);
-            //std::this_thread::sleep_for(std::chrono::seconds(2));
 
-            
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
             /* With a normal configuration (see dds::pub::qos::DataWriterQos
              * for various different writer configurations), deleting a writer will
@@ -87,25 +88,25 @@ int main() {
              * Wait for the subscriber to have stopped to be sure it received the
              * message. Again, not normally necessary and not recommended to do
              * this in a polling loop. */
+            
+           // std::cout << "writer.publication_matched_status().current_count() = " << writer.publication_matched_status().current_count() << '\n';
+           
         }
-
-        std::cout << "=== [Publisher] Waiting for samples to be accepted" << std::endl;
-        // этот фрагмент перестал работать
+        std::cout << "=== [Publisher] Waiting for sample to be accepted." << std::endl;
         while (writer.publication_matched_status().current_count() > 0) {
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
-        
     }
     catch (const dds::core::Exception& e) {
-        std::cerr << "=== [Publisher] exception: " << e.what() << std::endl;
+        std::cerr << "=== [Publisher] Exception: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
     catch (const std::exception& e) {
-        std::cerr << "=== [Publisher] C++ exception: " << e.what() << std::endl;
+        std::cerr << "=== [READER] C++ exception: " << e.what() << std::endl;
         return EXIT_FAILURE;
     }
 
-    std::cout << "=== [Publisher] Done" << std::endl;
+    std::cout << "=== [Publisher] Done." << std::endl;
 
     return EXIT_SUCCESS;
 }
