@@ -53,6 +53,7 @@ int main() {
 
         //создаём изображение для отправки
         cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/2560-1440.png");
+        //cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/big.png");
         //cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/new_my.png");
         //cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/colour.jpg");
         //cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/size.png");
@@ -66,7 +67,7 @@ int main() {
         std::string encoding = base64_encode(buffer.data(), buffer.size());
 
         for (int i = 0; i < 25; ++i) {
-
+            std::this_thread::sleep_for(std::chrono::seconds());
             //кодируем изображение в цикле
             /*std::vector<uchar> buffer;
             buffer.resize(static_cast<size_t>(image.rows) * static_cast<size_t>(image.cols));
@@ -78,8 +79,8 @@ int main() {
             HelloWorldData::Msg msg(i, encoding);
 
             /* Write the message. */
-            std::cout << "=== [Publisher] Write sample." << std::endl;
-            writer.write(msg);
+            std::cout << "=== [Publisher] Write sample." << '\t' << "size = " << encoding.length() << " bytes" << std::endl;
+            writer.write(msg); 
 
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
