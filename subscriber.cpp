@@ -111,7 +111,7 @@ int main() {
                      * is set. The other data parts are not.
                      * Check if this sample has valid data. */
                     if (info.valid()) {
-                        //std::cout << "=== [Subscriber] Message received:" << std::endl;
+                        std::cout << "=== [Subscriber] #" << msg.picture_width() << " Message received:" << std::endl;
 
                         // декодируем полученное сообщение
                         /*std::string dec_jpg = base64_decode(msg.message());

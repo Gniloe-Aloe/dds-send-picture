@@ -28,7 +28,6 @@ int main() {
         /* First, a domain participant is needed.
          * Create one on the default domain. */
         dds::domain::DomainParticipant participant(org::eclipse::cyclonedds::domain::default_id());
-
         /* To publish something, a topic is needed. */
         
         dds::topic::Topic<HelloWorldData::Msg> topic(participant, "any_topic_name");
@@ -54,9 +53,11 @@ int main() {
 
         //создаём изображение для отправки
         cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/2560-1440.png");
+        //cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/new_my.png");
         //cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/colour.jpg");
         //cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/size.png");
         //cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/1920-1080.png");
+        //cv::Mat image = cv::imread("/home/dkosinov/win_home/Desktop/little.png");
 
         //кодируем изображение в base64
         std::vector<uchar> buffer;
